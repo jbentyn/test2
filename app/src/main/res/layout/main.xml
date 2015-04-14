@@ -14,4 +14,11 @@
         android:scaleType="matrix"
         android:src="@drawable/maly_powstaniec_fota" />
 
+    <VideoView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:id="@+id/videoView"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+
 </RelativeLayout>
