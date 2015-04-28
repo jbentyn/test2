@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.test2"
-        minSdkVersion 13
+        minSdkVersion 21
         targetSdkVersion 21
         compileOptions {
             sourceCompatibility JavaVersion.VERSION_1_7
@@ -26,4 +26,6 @@ dependencies {
    compile 'com.android.support:appcompat-v7:21.0.3'
    //compile files('libs/android-support-v13.jar')
     compile files('libs/sensorsimulator-lib-2.0-rc1.jar')
+    compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.+'
+
 }

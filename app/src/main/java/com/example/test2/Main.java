@@ -14,13 +14,10 @@ import android.graphics.RectF;
 //import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.MediaPlayer;
-import android.widget.MediaController;
-import android.net.Uri;
+//import android.view.SurfaceView;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
-import android.os.SystemClock;
-import android.util.Log;
 import android.view.Display;
 import android.widget.ImageView;
 import android.widget.VideoView;
@@ -28,7 +25,9 @@ import android.widget.VideoView;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-public class Main extends Activity implements SensorEventListener {
+import pl.droidsonroids.gif.GifImageView;
+
+public class Main extends Activity implements SensorEventListener{
 
     // Transforming images variables
     // IF USING_SIMULATOR REMBER TO:
@@ -47,15 +46,15 @@ public class Main extends Activity implements SensorEventListener {
 	private long lastUpdate = 0;
 	private float minOffsetY,maxOffsetY,imageOffsetY=0;
 
-
     // timer variables
     private Handler customHandler = new Handler();
     private int lastHour=-1;
 
-    //Video
-    private VideoView video;
-    private float videoBaseX;
-    private MediaController mediaController;
+    //Gif
+    private float gifBaseX;
+    private GifImageView gifView;
+
+    private static final String TAG="MY_DEBUG";
 
 	public static float clamp(float val, float min, float max) {
 	    return Math.max(min, Math.min(max, val));
@@ -80,19 +79,12 @@ public class Main extends Activity implements SensorEventListener {
 		minOffsetY = 0;
 		maxOffsetY = image.getDrawable().getIntrinsicWidth()*mScaleFactor-size.x;
 
-        video =(VideoView) findViewById(R.id.videoView);
-        video.setVideoURI(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.big_buck_bunny));
+        gifView =(GifImageView)findViewById(R.id.gifView);
+
         //TODO magic number
-        videoBaseX = (image.getDrawable().getIntrinsicWidth()*mScaleFactor - 100) /2 ;
-        Log.d("video",videoBaseX+"");
-        mediaController = new MediaController(this);
-        mediaController.setAnchorView(video);
-        mediaController.setMediaPlayer(video);
-        video.setMediaController(mediaController);
-        video.setOnPreparedListener(PreparedListener);
+        gifBaseX = (image.getDrawable().getIntrinsicWidth()*mScaleFactor - 100) /2 ;
 
         customHandler.post(timeThread);
-//        customHandler.post(videoThread);
 
         //USING_SIMULATOR
             //connecting to simulator
@@ -132,8 +124,8 @@ public class Main extends Activity implements SensorEventListener {
 				mMatrix.postTranslate(-imageOffsetY, 0);
 				image.setImageMatrix(mMatrix);
 				updateDisplayRect();
-                //move video
-                video.setX(videoBaseX-imageOffsetY);
+                //move gif
+                gifView.setX(gifBaseX -imageOffsetY);
 			}
 		}
 	}
@@ -163,22 +155,63 @@ public class Main extends Activity implements SensorEventListener {
     private  Runnable timeThread= new Runnable(){
         public void run(){
 
-
                 Calendar calendar = GregorianCalendar.getInstance();
                 calendar.setTimeInMillis(System.currentTimeMillis());
                 int currentHour = calendar.get(Calendar.HOUR_OF_DAY);
                 if (currentHour != lastHour) {
-                    //TODO switch for hours
-                }
 
-                // test
-                int minute = calendar.get(Calendar.MINUTE);
-                if (minute % 2 == 0) {
-                    image.setImageResource(R.drawable.test1);
-                } else {
-                    image.setImageResource(R.drawable.maly_powstaniec_fota);
+                    switch(currentHour){
+                        case 3:
+                        case 4:
+                                image.setImageResource(R.drawable.h_3);
+                            break;
+                        case 5:
+                            image.setImageResource(R.drawable.h_5);
+                            break;
+                        case 6:
+                        case 7:
+                            image.setImageResource(R.drawable.h_6);
+                            break;
+                        case 8:
+                        case 9:
+                            image.setImageResource(R.drawable.h_8);
+                            break;
+                        case 10:
+                        case 11:
+                            image.setImageResource(R.drawable.h_10);
+                            break;
+                        case 12:
+                        case 13:
+                        case 14:
+                            image.setImageResource(R.drawable.h_12);
+                            break;
+                        case 15:
+                        case 16:
+                            image.setImageResource(R.drawable.h_15);
+                            break;
+                        case 17:
+                        case 18:
+                            image.setImageResource(R.drawable.h_17);
+                            break;
+                        case 19:
+                            image.setImageResource(R.drawable.h_19);
+                            break;
+                        case 20:
+                            image.setImageResource(R.drawable.h_20);
+                            break;
+                        case 21:
+                            image.setImageResource(R.drawable.h_21);
+                            break;
+                        case 23:
+                            image.setImageResource(R.drawable.h_23);
+                            break;
+                        case 24:
+                            image.setImageResource(R.drawable.h_24);
+                            break;
+                        default :
+                            image.setImageResource(R.drawable.h_24);
+                    }
                 }
-
 
                 customHandler.post(this);
 
@@ -186,31 +219,4 @@ public class Main extends Activity implements SensorEventListener {
         }
     };
 
-    MediaPlayer.OnPreparedListener PreparedListener = new MediaPlayer.OnPreparedListener(){
-
-        @Override
-        public void onPrepared(MediaPlayer m) {
-            try {
-                if (m.isPlaying()) {
-                    m.stop();
-                    m.release();
-                    m = new MediaPlayer();
-                }
-                m.setVolume(0f, 0f);
-                m.setLooping(true);
-                m.start();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    };
-//    private  Runnable videoThread= new Runnable(){
-//        public void run(){
-//            if (!video.isPlaying()){
-//                video.start();
-//            }
-//
-//            customHandler.post(this);
-//        }
-//    };
 }
