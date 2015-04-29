@@ -53,6 +53,7 @@ public class Main extends Activity implements SensorEventListener{
     //Gif
     private float gifBaseX;
     private GifImageView gifView;
+    private static final int GIF_ID=R.drawable.bear1_e0;
 
     private static final String TAG="MY_DEBUG";
 
@@ -164,52 +165,66 @@ public class Main extends Activity implements SensorEventListener{
                         case 3:
                         case 4:
                                 image.setImageResource(R.drawable.h_3);
+                                gifView.setImageDrawable(null);
                             break;
                         case 5:
                             image.setImageResource(R.drawable.h_5);
+                            gifView.setImageDrawable(null);
                             break;
                         case 6:
                         case 7:
                             image.setImageResource(R.drawable.h_6);
+                            gifView.setImageDrawable(null);
                             break;
                         case 8:
                         case 9:
                             image.setImageResource(R.drawable.h_8);
+                            gifView.setImageResource(GIF_ID);
                             break;
                         case 10:
                         case 11:
                             image.setImageResource(R.drawable.h_10);
+                            gifView.setImageResource(GIF_ID);
                             break;
                         case 12:
                         case 13:
                         case 14:
                             image.setImageResource(R.drawable.h_12);
+                            gifView.setImageResource(GIF_ID);
                             break;
                         case 15:
                         case 16:
                             image.setImageResource(R.drawable.h_15);
+                            gifView.setImageResource(GIF_ID);
                             break;
                         case 17:
                         case 18:
                             image.setImageResource(R.drawable.h_17);
+                            gifView.setImageResource(GIF_ID);
                             break;
                         case 19:
                             image.setImageResource(R.drawable.h_19);
+                            gifView.setImageResource(GIF_ID);
                             break;
                         case 20:
                             image.setImageResource(R.drawable.h_20);
+                            gifView.setImageDrawable(null);
                             break;
                         case 21:
                             image.setImageResource(R.drawable.h_21);
+                            gifView.setImageDrawable(null);
                             break;
                         case 23:
                             image.setImageResource(R.drawable.h_23);
+                            gifView.setImageDrawable(null);
                             break;
                         case 24:
                             image.setImageResource(R.drawable.h_24);
+                            gifView.setImageDrawable(null);
                             break;
                         default :
                             image.setImageResource(R.drawable.h_24);
+                            gifView.setImageDrawable(null);
                     }
                 }
 
