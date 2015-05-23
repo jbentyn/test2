@@ -17,12 +17,11 @@
 
     <pl.droidsonroids.gif.GifImageView
         android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
+        android:layout_height="150dp"
         android:id="@+id/gifView"
-        android:src="@drawable/bear1_e0"
-        android:adjustViewBounds="true" />
+        android:src="@drawable/samolot_03"
+        android:adjustViewBounds="true"
+     />
 
 
 </RelativeLayout>

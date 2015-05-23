@@ -9,18 +9,19 @@ import android.app.Activity;
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.RectF;
+//uncoment if NO SIMULATOR
 //import android.hardware.Sensor;
 //import android.hardware.SensorEvent;
 //import android.hardware.SensorEventListener;
+//
 import android.hardware.SensorManager;
-import android.media.MediaPlayer;
 //import android.view.SurfaceView;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
+import android.util.Log;
 import android.view.Display;
 import android.widget.ImageView;
-import android.widget.VideoView;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -36,15 +37,20 @@ public class Main extends Activity implements SensorEventListener{
 
 	// if (USING_SIMULATOR) {
     private SensorManagerSimulator mSensorManager;
-    //else {
-    //private SensorManager mSensorManager;
+//    else {
+   // private SensorManager mSensorManager;
+
+
     private Sensor accelerometer;
 	private ImageView image;
 	private final Matrix mMatrix = new Matrix();
 	private RectF mDisplayRect = new RectF();
 	private float mScaleFactor;
 	private long lastUpdate = 0;
-	private float minOffsetY,maxOffsetY,imageOffsetY=0;
+	private float minOffsetX, maxOffsetX, imageOffsetX =0;
+
+    private static final float BASE_X_OFFSET_FROM_CENTER =50;
+    private static final float BASE_Y_OFFSET=510;
 
     // timer variables
     private Handler customHandler = new Handler();
@@ -53,7 +59,7 @@ public class Main extends Activity implements SensorEventListener{
     //Gif
     private float gifBaseX;
     private GifImageView gifView;
-    private static final int GIF_ID=R.drawable.bear1_e0;
+    private static final int GIF_ID=R.drawable.samolot_03;
 
     private static final String TAG="MY_DEBUG";
 
@@ -69,21 +75,30 @@ public class Main extends Activity implements SensorEventListener{
 		image = (ImageView) findViewById(R.id.imageView1);
 		//scaling and centering
 		Display display = getWindowManager().getDefaultDisplay();
-		Point size = new Point();
-		display.getSize(size);
+		Point displaySize = new Point();
+		display.getSize(displaySize);
 		
-		float sizeY= (float) size.y;
+		float displaySizeY= (float) displaySize.y;
 		float imageY = (float) image.getDrawable().getIntrinsicHeight();
-		mScaleFactor = sizeY / imageY;
+		mScaleFactor = displaySizeY / imageY;
 
-		imageOffsetY = (image.getDrawable().getIntrinsicWidth()*mScaleFactor-size.x) /2 ;
-		minOffsetY = 0;
-		maxOffsetY = image.getDrawable().getIntrinsicWidth()*mScaleFactor-size.x;
+        float scaleWidth = (float)displaySize.x/(float) image.getDrawable().getIntrinsicWidth();
+		imageOffsetX = (image.getDrawable().getIntrinsicWidth()*mScaleFactor-displaySize.x) /2 ;
+		minOffsetX = 0;
+		maxOffsetX = image.getDrawable().getIntrinsicWidth()*mScaleFactor-displaySize.x;
 
         gifView =(GifImageView)findViewById(R.id.gifView);
 
         //TODO magic number
-        gifBaseX = (image.getDrawable().getIntrinsicWidth()*mScaleFactor - 100) /2 ;
+        float temp=BASE_Y_OFFSET*(imageY/693);
+        float y= BASE_Y_OFFSET/693 *displaySizeY - gifView.getLayoutParams().height;
+        gifView.setY(y);
+        Log.d(TAG,"GIF_Y "+y);
+        //TODO magic number
+       // gifBaseX = (image.getDrawable().getIntrinsicWidth()*mScaleFactor - 100) /2 ;
+        gifBaseX = (image.getDrawable().getIntrinsicWidth()*mScaleFactor + BASE_X_OFFSET_FROM_CENTER)/2;
+
+
 
         customHandler.post(timeThread);
 
@@ -117,16 +132,16 @@ public class Main extends Activity implements SensorEventListener{
 
 				lastUpdate = curTime;
 				
-				imageOffsetY+=y*10;
-				imageOffsetY=clamp(imageOffsetY,minOffsetY,maxOffsetY);
+				imageOffsetX +=y*10;
+				imageOffsetX =clamp(imageOffsetX, minOffsetX, maxOffsetX);
 				//update image
 				mMatrix.reset();
 				mMatrix.postScale(mScaleFactor, mScaleFactor);
-				mMatrix.postTranslate(-imageOffsetY, 0);
+				mMatrix.postTranslate(-imageOffsetX, 0);
 				image.setImageMatrix(mMatrix);
 				updateDisplayRect();
                 //move gif
-                gifView.setX(gifBaseX -imageOffsetY);
+                gifView.setX(gifBaseX - imageOffsetX);
 			}
 		}
 	}
@@ -162,72 +177,73 @@ public class Main extends Activity implements SensorEventListener{
                 if (currentHour != lastHour) {
 
                     switch(currentHour){
-                        case 3:
-                        case 4:
-                                image.setImageResource(R.drawable.h_3);
-                                gifView.setImageDrawable(null);
-                            break;
-                        case 5:
-                            image.setImageResource(R.drawable.h_5);
-                            gifView.setImageDrawable(null);
-                            break;
-                        case 6:
-                        case 7:
-                            image.setImageResource(R.drawable.h_6);
-                            gifView.setImageDrawable(null);
-                            break;
-                        case 8:
-                        case 9:
-                            image.setImageResource(R.drawable.h_8);
-                            gifView.setImageResource(GIF_ID);
-                            break;
-                        case 10:
-                        case 11:
-                            image.setImageResource(R.drawable.h_10);
-                            gifView.setImageResource(GIF_ID);
-                            break;
-                        case 12:
-                        case 13:
-                        case 14:
+//                        case 3:
+//                        case 4:
+//                                image.setImageResource(R.drawable.h_3);
+//                                gifView.setImageDrawable(null);
+//                            break;
+//                        case 5:
+//                            image.setImageResource(R.drawable.h_5);
+//                            gifView.setImageDrawable(null);
+//                            break;
+//                        case 6:
+//                        case 7:
+//                            image.setImageResource(R.drawable.h_6);
+//                            gifView.setImageDrawable(null);
+//                            break;
+//                        case 8:
+//                        case 9:
+//                            image.setImageResource(R.drawable.h_8);
+//                            gifView.setImageResource(GIF_ID);
+//                            break;
+//                        case 10:
+//                        case 11:
+//                            image.setImageResource(R.drawable.h_10);
+//                            gifView.setImageResource(GIF_ID);
+//                            break;
+//                        case 12:
+//                        case 13:
+//                        case 14:
+//                            image.setImageResource(R.drawable.h_12);
+//                            gifView.setImageResource(GIF_ID);
+//                            break;
+//                        case 15:
+//                        case 16:
+//                            image.setImageResource(R.drawable.h_15);
+//                            gifView.setImageResource(GIF_ID);
+//                            break;
+//                        case 17:
+//                        case 18:
+//                            image.setImageResource(R.drawable.h_17);
+//                            gifView.setImageResource(GIF_ID);
+//                            break;
+//                        case 19:
+//                            image.setImageResource(R.drawable.h_19);
+//                            gifView.setImageResource(GIF_ID);
+//                            break;
+//                        case 20:
+//                            image.setImageResource(R.drawable.h_20);
+//                            gifView.setImageDrawable(null);
+//                            break;
+//                        case 21:
+//                            image.setImageResource(R.drawable.h_21);
+//                            gifView.setImageDrawable(null);
+//                            break;
+//                        case 23:
+//                            image.setImageResource(R.drawable.h_23);
+//                            gifView.setImageDrawable(null);
+//                            break;
+//                        case 24:
+//                            image.setImageResource(R.drawable.h_24);
+//                            gifView.setImageDrawable(null);
+//                            break;
+                        default :
                             image.setImageResource(R.drawable.h_12);
                             gifView.setImageResource(GIF_ID);
-                            break;
-                        case 15:
-                        case 16:
-                            image.setImageResource(R.drawable.h_15);
-                            gifView.setImageResource(GIF_ID);
-                            break;
-                        case 17:
-                        case 18:
-                            image.setImageResource(R.drawable.h_17);
-                            gifView.setImageResource(GIF_ID);
-                            break;
-                        case 19:
-                            image.setImageResource(R.drawable.h_19);
-                            gifView.setImageResource(GIF_ID);
-                            break;
-                        case 20:
-                            image.setImageResource(R.drawable.h_20);
-                            gifView.setImageDrawable(null);
-                            break;
-                        case 21:
-                            image.setImageResource(R.drawable.h_21);
-                            gifView.setImageDrawable(null);
-                            break;
-                        case 23:
-                            image.setImageResource(R.drawable.h_23);
-                            gifView.setImageDrawable(null);
-                            break;
-                        case 24:
-                            image.setImageResource(R.drawable.h_24);
-                            gifView.setImageDrawable(null);
-                            break;
-                        default :
-                            image.setImageResource(R.drawable.h_24);
-                            gifView.setImageDrawable(null);
                     }
                 }
 
+                lastHour=currentHour;
                 customHandler.post(this);
 
 
