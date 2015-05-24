@@ -1,27 +1,29 @@
 package com.example.test2;
 
-import org.openintents.sensorsimulator.hardware.Sensor;
-import org.openintents.sensorsimulator.hardware.SensorEvent;
-import org.openintents.sensorsimulator.hardware.SensorEventListener;
-import org.openintents.sensorsimulator.hardware.SensorManagerSimulator;
+//import org.openintents.sensorsimulator.hardware.Sensor;
+//import org.openintents.sensorsimulator.hardware.SensorEvent;
+//import org.openintents.sensorsimulator.hardware.SensorEventListener;
+//import org.openintents.sensorsimulator.hardware.SensorManagerSimulator;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.RectF;
 //uncoment if NO SIMULATOR
-//import android.hardware.Sensor;
-//import android.hardware.SensorEvent;
-//import android.hardware.SensorEventListener;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 //
 import android.hardware.SensorManager;
-//import android.view.SurfaceView;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.util.Log;
 import android.view.Display;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -36,9 +38,9 @@ public class Main extends Activity implements SensorEventListener{
     // add INTERNET PERMISSION to manifest
 
 	// if (USING_SIMULATOR) {
-    private SensorManagerSimulator mSensorManager;
+//    private SensorManagerSimulator mSensorManager;
 //    else {
-   // private SensorManager mSensorManager;
+    private SensorManager mSensorManager;
 
 
     private Sensor accelerometer;
@@ -49,8 +51,12 @@ public class Main extends Activity implements SensorEventListener{
 	private long lastUpdate = 0;
 	private float minOffsetX, maxOffsetX, imageOffsetX =0;
 
-    private static final float BASE_X_OFFSET_FROM_CENTER =50;
-    private static final float BASE_Y_OFFSET=510;
+    private static final float BASE_X_OFFSET_FROM_CENTER =120;
+    private static final float BASE_Y_OFFSET_FROM_BOTTOM =260;
+    private static final float IMAGE_HEIGHT=991;
+    private static final float IMAGE_WIDTH=3274;
+    private static final float GIF_HEIGHT=607;
+    private static final float GIF_WIDTH=343;
 
     // timer variables
     private Handler customHandler = new Handler();
@@ -82,36 +88,43 @@ public class Main extends Activity implements SensorEventListener{
 		float imageY = (float) image.getDrawable().getIntrinsicHeight();
 		mScaleFactor = displaySizeY / imageY;
 
-        float scaleWidth = (float)displaySize.x/(float) image.getDrawable().getIntrinsicWidth();
-		imageOffsetX = (image.getDrawable().getIntrinsicWidth()*mScaleFactor-displaySize.x) /2 ;
-		minOffsetX = 0;
-		maxOffsetX = image.getDrawable().getIntrinsicWidth()*mScaleFactor-displaySize.x;
+        imageOffsetX = (image.getDrawable().getIntrinsicWidth()*mScaleFactor-displaySize.x) /2 ;
+        minOffsetX = 0;
+        maxOffsetX = image.getDrawable().getIntrinsicWidth()*mScaleFactor-displaySize.x;
 
         gifView =(GifImageView)findViewById(R.id.gifView);
+        int gifHeight = (int)displaySizeY/2;
+        float gifHeightRatio =  gifHeight/GIF_HEIGHT;
+        int gifWidth = Math.round(GIF_WIDTH*gifHeightRatio);
 
-        //TODO magic number
-        float temp=BASE_Y_OFFSET*(imageY/693);
-        float y= BASE_Y_OFFSET/693 *displaySizeY - gifView.getLayoutParams().height;
+        android.view.ViewGroup.LayoutParams layoutParams = gifView.getLayoutParams();
+        layoutParams.width = gifWidth;
+        layoutParams.height = gifHeight;
+        gifView.setLayoutParams(layoutParams);
+
+        float y= BASE_Y_OFFSET_FROM_BOTTOM / IMAGE_HEIGHT *imageY*mScaleFactor;
+        y=imageY*mScaleFactor-y-gifHeight;
         gifView.setY(y);
-        Log.d(TAG,"GIF_Y "+y);
-        //TODO magic number
-       // gifBaseX = (image.getDrawable().getIntrinsicWidth()*mScaleFactor - 100) /2 ;
-        gifBaseX = (image.getDrawable().getIntrinsicWidth()*mScaleFactor + BASE_X_OFFSET_FROM_CENTER)/2;
 
+        float x= image.getDrawable().getIntrinsicWidth()*mScaleFactor /2;
+        gifBaseX = x+BASE_X_OFFSET_FROM_CENTER/IMAGE_WIDTH *image.getDrawable().getIntrinsicWidth()*mScaleFactor;
+        gifView.setX(gifBaseX);
 
+        gifView.requestLayout();
 
+        //changing background  thread
         customHandler.post(timeThread);
 
         //USING_SIMULATOR
             //connecting to simulator
-            mSensorManager = SensorManagerSimulator.getSystemService(this, SENSOR_SERVICE);
-            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-            StrictMode.setThreadPolicy(policy);
-            mSensorManager.connectSimulator();
+//            mSensorManager = SensorManagerSimulator.getSystemService(this, SENSOR_SERVICE);
+//            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+//            StrictMode.setThreadPolicy(policy);
+//            mSensorManager.connectSimulator();
         // NOT USING_SIMULATOR
-//            mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-//            accelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-//            mSensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+            mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+            accelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+            mSensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
 
     }
 	@Override
@@ -138,7 +151,7 @@ public class Main extends Activity implements SensorEventListener{
 				mMatrix.reset();
 				mMatrix.postScale(mScaleFactor, mScaleFactor);
 				mMatrix.postTranslate(-imageOffsetX, 0);
-				image.setImageMatrix(mMatrix);
+                image.setImageMatrix(mMatrix);
 				updateDisplayRect();
                 //move gif
                 gifView.setX(gifBaseX - imageOffsetX);
@@ -177,64 +190,42 @@ public class Main extends Activity implements SensorEventListener{
                 if (currentHour != lastHour) {
 
                     switch(currentHour){
-//                        case 3:
-//                        case 4:
-//                                image.setImageResource(R.drawable.h_3);
-//                                gifView.setImageDrawable(null);
-//                            break;
-//                        case 5:
-//                            image.setImageResource(R.drawable.h_5);
-//                            gifView.setImageDrawable(null);
-//                            break;
-//                        case 6:
-//                        case 7:
-//                            image.setImageResource(R.drawable.h_6);
-//                            gifView.setImageDrawable(null);
-//                            break;
-//                        case 8:
-//                        case 9:
-//                            image.setImageResource(R.drawable.h_8);
-//                            gifView.setImageResource(GIF_ID);
-//                            break;
-//                        case 10:
-//                        case 11:
-//                            image.setImageResource(R.drawable.h_10);
-//                            gifView.setImageResource(GIF_ID);
-//                            break;
-//                        case 12:
-//                        case 13:
-//                        case 14:
-//                            image.setImageResource(R.drawable.h_12);
-//                            gifView.setImageResource(GIF_ID);
-//                            break;
-//                        case 15:
-//                        case 16:
-//                            image.setImageResource(R.drawable.h_15);
-//                            gifView.setImageResource(GIF_ID);
-//                            break;
-//                        case 17:
-//                        case 18:
-//                            image.setImageResource(R.drawable.h_17);
-//                            gifView.setImageResource(GIF_ID);
-//                            break;
-//                        case 19:
-//                            image.setImageResource(R.drawable.h_19);
-//                            gifView.setImageResource(GIF_ID);
-//                            break;
+                        case 8:
+                        case 9:
+                            image.setImageResource(R.drawable.h_8);
+                            gifView.setImageResource(GIF_ID);
+                            break;
+                        case 10:
+                        case 11:
+                            image.setImageResource(R.drawable.h_10);
+                            gifView.setImageResource(GIF_ID);
+                            break;
+                        case 12:
+                        case 13:
+                        case 14:
+                            image.setImageResource(R.drawable.h_12);
+                            gifView.setImageResource(GIF_ID);
+                            break;
+                        case 15:
+                        case 16:
+                            image.setImageResource(R.drawable.h_15);
+                            gifView.setImageResource(GIF_ID);
+                            break;
+                        case 17:
+                        case 18:
+                            image.setImageResource(R.drawable.h_17);
+                            gifView.setImageResource(GIF_ID);
+                            break;
+                        case 19:
+                            image.setImageResource(R.drawable.h_19);
+                            gifView.setImageResource(GIF_ID);
+                            break;
 //                        case 20:
 //                            image.setImageResource(R.drawable.h_20);
 //                            gifView.setImageDrawable(null);
 //                            break;
 //                        case 21:
 //                            image.setImageResource(R.drawable.h_21);
-//                            gifView.setImageDrawable(null);
-//                            break;
-//                        case 23:
-//                            image.setImageResource(R.drawable.h_23);
-//                            gifView.setImageDrawable(null);
-//                            break;
-//                        case 24:
-//                            image.setImageResource(R.drawable.h_24);
 //                            gifView.setImageDrawable(null);
 //                            break;
                         default :
@@ -245,7 +236,6 @@ public class Main extends Activity implements SensorEventListener{
 
                 lastHour=currentHour;
                 customHandler.post(this);
-
 
         }
     };
