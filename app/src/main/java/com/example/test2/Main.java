@@ -51,12 +51,12 @@ public class Main extends Activity implements SensorEventListener{
 	private long lastUpdate = 0;
 	private float minOffsetX, maxOffsetX, imageOffsetX =0;
 
-    private static final float BASE_X_OFFSET_FROM_CENTER =120;
-    private static final float BASE_Y_OFFSET_FROM_BOTTOM =260;
+    private static final float BASE_X_OFFSET_FROM_CENTER = -250;
+    private static final float BASE_Y_OFFSET_FROM_BOTTOM =250;
     private static final float IMAGE_HEIGHT=991;
     private static final float IMAGE_WIDTH=3274;
-    private static final float GIF_HEIGHT=607;
-    private static final float GIF_WIDTH=343;
+    private static final float GIF_HEIGHT=630;
+    private static final float GIF_WIDTH=900;
 
     // timer variables
     private Handler customHandler = new Handler();
@@ -65,7 +65,7 @@ public class Main extends Activity implements SensorEventListener{
     //Gif
     private float gifBaseX;
     private GifImageView gifView;
-    private static final int GIF_ID=R.drawable.samolot_03;
+    private static final int GIF_ID=R.drawable.gify_maj_poprawione;
 
     private static final String TAG="MY_DEBUG";
 
@@ -220,14 +220,14 @@ public class Main extends Activity implements SensorEventListener{
                             image.setImageResource(R.drawable.h_19);
                             gifView.setImageResource(GIF_ID);
                             break;
-//                        case 20:
-//                            image.setImageResource(R.drawable.h_20);
-//                            gifView.setImageDrawable(null);
-//                            break;
-//                        case 21:
-//                            image.setImageResource(R.drawable.h_21);
-//                            gifView.setImageDrawable(null);
-//                            break;
+                        case 20:
+                            image.setImageResource(R.drawable.h_20);
+                            gifView.setImageDrawable(null);
+                            break;
+                        case 21:
+                            image.setImageResource(R.drawable.h_21);
+                            gifView.setImageDrawable(null);
+                            break;
                         default :
                             image.setImageResource(R.drawable.h_12);
                             gifView.setImageResource(GIF_ID);
